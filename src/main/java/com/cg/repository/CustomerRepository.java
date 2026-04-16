@@ -1,5 +1,6 @@
 package com.cg.repository;
 
-public class CustomerRepository {
+import com.cg.entity.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-}
+public interface CustomerRepository extends JpaRepository<Customer, Long> {}

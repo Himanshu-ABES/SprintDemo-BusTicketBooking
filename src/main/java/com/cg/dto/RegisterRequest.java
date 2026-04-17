@@ -1,23 +1,10 @@
-package com.cg.entity;
+package com.cg.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "customer")
-public class Customer {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long custId;
-    
+public class RegisterRequest {
     private String custName;
     private String phoneNo;
     private String password;
 
-    public Customer() {}
-
-    public Long getCustId() { return custId; }
-    public void setCustId(Long custId) { this.custId = custId; }
     public String getCustName() { return custName; }
     public void setCustName(String custName) { this.custName = custName; }
     public String getPhoneNo() { return phoneNo; }

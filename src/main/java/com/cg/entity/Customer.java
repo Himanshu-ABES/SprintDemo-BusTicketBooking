@@ -11,6 +11,8 @@ public class Customer {
     private Long custId;
     
     private String custName;
+    
+    @Column(unique = true)
     private String phoneNo;
     private String password;
 

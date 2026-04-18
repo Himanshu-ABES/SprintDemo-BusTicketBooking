@@ -1,6 +1,6 @@
 package com.cg.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +16,7 @@ public class BusBooking {
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     private RouteSchedule schedule;
-
+    
     @ManyToOne
     @JoinColumn(name = "cust_id")
     private Customer customer;

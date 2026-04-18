@@ -11,10 +11,26 @@ INSERT INTO bus_route (src, dest) VALUES ('Mumbai', 'Pune') ON CONFLICT DO NOTHI
 INSERT INTO bus_route (src, dest) VALUES ('Bangalore', 'Chennai') ON CONFLICT DO NOTHING;
 INSERT INTO bus_route (src, dest) VALUES ('Hyderabad', 'Vizag') ON CONFLICT DO NOTHING;
 
+-- Seed Users (passwords are BCrypt-encoded)
+-- rahul_s / Pass123
+INSERT INTO users (username, password, enabled) VALUES ('rahul_s', '$2a$10$DvHTFlRw1LKy0grLLKqPie.uwiRJy2Gj3/v28jvtBRaXynMK1rut.', true) ON CONFLICT (username) DO NOTHING;
+-- priya_s / Pass456
+INSERT INTO users (username, password, enabled) VALUES ('priya_s', '$2a$10$KNzxNT8mZOD23jnsXduNcebKZAs.IeTl.KVsFRZcKTVOumVFNs.vG', true) ON CONFLICT (username) DO NOTHING;
+-- amit_k / Pass789
+INSERT INTO users (username, password, enabled) VALUES ('amit_k', '$2a$10$1LkPOwINnZqK.vWjfg.rUODdXPysim/4o2z9e/NamRCG5CtGewRbq', true) ON CONFLICT (username) DO NOTHING;
+-- admin / Admin123
+INSERT INTO users (username, password, enabled) VALUES ('admin', '$2a$10$bKDytM0Eclh3iqss0zM5K.rL8kCApAa/B.KEKrKoXBOwN4wsW/R7K', true) ON CONFLICT (username) DO NOTHING;
+
+-- Seed Authorities (Roles)
+INSERT INTO authorities (username, authority) VALUES ('rahul_s', 'ROLE_USER') ON CONFLICT DO NOTHING;
+INSERT INTO authorities (username, authority) VALUES ('priya_s', 'ROLE_USER') ON CONFLICT DO NOTHING;
+INSERT INTO authorities (username, authority) VALUES ('amit_k', 'ROLE_USER') ON CONFLICT DO NOTHING;
+INSERT INTO authorities (username, authority) VALUES ('admin', 'ROLE_ADMIN') ON CONFLICT DO NOTHING;
+
 -- Seed Customers
-INSERT INTO customer (cust_name, phone_no, password) VALUES ('Rahul Sharma', '9876543210', 'pass123') ON CONFLICT (phone_no) DO NOTHING;
-INSERT INTO customer (cust_name, phone_no, password) VALUES ('Priya Singh', '9876543211', 'pass456') ON CONFLICT (phone_no) DO NOTHING;
-INSERT INTO customer (cust_name, phone_no, password) VALUES ('Amit Kumar', '9876543212', 'pass789') ON CONFLICT (phone_no) DO NOTHING;
+INSERT INTO customer (username, cust_name, email, phone_no) VALUES ('rahul_s', 'Rahul Sharma', 'rahul@example.com', '9876543210') ON CONFLICT (username) DO NOTHING;
+INSERT INTO customer (username, cust_name, email, phone_no) VALUES ('priya_s', 'Priya Singh', 'priya@example.com', '9876543211') ON CONFLICT (username) DO NOTHING;
+INSERT INTO customer (username, cust_name, email, phone_no) VALUES ('amit_k', 'Amit Kumar', 'amit@example.com', '9876543212') ON CONFLICT (username) DO NOTHING;
 
 -- Seed Route Schedules
 INSERT INTO route_schedule (route_id, departure_time, schedule_dt, avl_seats, tot_seats, sch_status)

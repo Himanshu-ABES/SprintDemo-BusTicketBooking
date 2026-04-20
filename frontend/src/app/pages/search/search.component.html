@@ -1,0 +1,268 @@
+<style>
+  .search-page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 32px 20px 72px;
+    text-align: left;
+  }
+
+  .search-header {
+    margin-bottom: 32px;
+  }
+
+  .search-route-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    justify-content: flex-start;
+  }
+
+  .search-route-arrow {
+    color: var(--ink-muted);
+    font-size: 0.875rem;
+  }
+
+  /* Loading */
+  .search-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 0;
+    gap: 16px;
+  }
+
+  .search-loading-text {
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  /* Empty State */
+  .search-empty {
+    text-align: left;
+    padding: 80px 0;
+  }
+
+  .search-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+  }
+
+  .search-empty-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .search-empty-sub {
+    font-size: 0.9375rem;
+    color: var(--ink-muted);
+    margin-bottom: 24px;
+  }
+
+  /* Results Grid */
+  .results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 860px;
+  }
+
+  /* Schedule Card */
+  .schedule-card {
+    background: var(--white);
+    border: 1px solid rgba(10,10,10,0.04);
+    border-radius: var(--radius-xl);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+  }
+
+  .schedule-info {
+    flex: 1;
+  }
+
+  .schedule-route {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .schedule-route-arrow {
+    color: var(--ink-faint);
+    font-weight: 400;
+  }
+
+  .schedule-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .schedule-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  .schedule-meta-icon {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .schedule-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .schedule-book-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .schedule-book-btn:hover {
+    background: var(--ink-light);
+  }
+
+  .schedule-book-btn:active {
+    transform: scale(0.97);
+  }
+
+  .schedule-book-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 640px) {
+    .search-page {
+      padding: 24px 16px 56px;
+    }
+
+    .results-grid {
+      max-width: 100%;
+    }
+
+    .schedule-card {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    .schedule-actions {
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .schedule-book-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="search-page">
+
+  <!-- Header -->
+  <div class="search-header ios-animate-in">
+    <p class="ios-overline">Search Results</p>
+    <div class="search-route-label">
+      <span class="ios-title">{{ src }}</span>
+      <span class="search-route-arrow">→</span>
+      <span class="ios-title">{{ dest }}</span>
+    </div>
+    <p class="ios-caption" style="margin-top: 6px;">{{ date }}</p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="search-loading">
+    <div class="ios-spinner"></div>
+    <span class="search-loading-text">Searching for available buses…</span>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage && !isLoading" class="ios-alert ios-alert-error" style="margin-bottom: 24px;">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !errorMessage && schedules.length === 0" class="search-empty ios-animate-in">
+    <div class="search-empty-icon">No Results</div>
+    <div class="search-empty-title">No buses found</div>
+    <div class="search-empty-sub">Try a different route or travel date.</div>
+    <a routerLink="/home" class="ios-btn ios-btn-outline ios-btn-sm">← Back to Search</a>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!isLoading && schedules.length > 0" class="results-grid">
+    <div *ngFor="let schedule of schedules; let i = index"
+         class="schedule-card"
+         [style.animation-delay]="(i * 0.06) + 's'">
+
+      <div class="schedule-info">
+        <div class="schedule-route">
+          {{ schedule.busRoute.src }}
+          <span class="schedule-route-arrow">→</span>
+          {{ schedule.busRoute.dest }}
+        </div>
+        <div class="schedule-meta">
+          <span class="schedule-meta-item">
+            <span class="schedule-meta-icon">Date</span>
+            {{ schedule.scheduleDt }}
+          </span>
+          <span class="schedule-meta-item">
+            <span class="schedule-meta-icon">Time</span>
+            {{ schedule.departureTime }}
+          </span>
+          <span class="schedule-meta-item">
+            <span class="schedule-meta-icon">Seats</span>
+            {{ schedule.totSeats }} total
+          </span>
+        </div>
+      </div>
+
+      <div class="schedule-actions">
+        <span class="ios-badge" [ngClass]="getAvailabilityClass(schedule.avlSeats)">
+          {{ schedule.avlSeats }} seats available
+        </span>
+        <button class="schedule-book-btn"
+                [disabled]="schedule.avlSeats === 0"
+                (click)="bookNow(schedule)">
+          {{ schedule.avlSeats === 0 ? 'Sold Out' : 'Book Now →' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,125 @@
+<style>
+  .login-page {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 32px 28px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(10,10,10,0.04);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .login-sub {
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+
+  .login-field {
+    margin-bottom: 20px;
+  }
+
+  .login-actions {
+    margin-top: 28px;
+  }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+  }
+
+  .login-footer a {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .login-footer a:hover {
+    opacity: 0.7;
+  }
+
+  .login-divider {
+    height: 1px;
+    background: rgba(10,10,10,0.08);
+    margin: 24px 0;
+  }
+</style>
+
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-header">
+      <div class="login-title">Welcome Back</div>
+      <div class="login-sub">Login to your account</div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="ios-alert ios-alert-error" style="margin-bottom: 20px;">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <!-- Username -->
+      <div class="login-field">
+        <label class="ios-label">Username</label>
+        <input class="ios-input"
+               [class.invalid]="f['username'].touched && f['username'].invalid"
+               type="text"
+               formControlName="username"
+               placeholder="Enter your username" />
+      </div>
+
+      <!-- Password -->
+      <div class="login-field">
+        <label class="ios-label">Password</label>
+        <input class="ios-input"
+               [class.invalid]="f['password'].touched && f['password'].invalid"
+               type="password"
+               formControlName="password"
+               placeholder="Enter your password" />
+      </div>
+
+      <!-- Submit -->
+      <div class="login-actions">
+        <button type="submit"
+                class="ios-btn ios-btn-primary ios-btn-full ios-btn-lg"
+                [disabled]="isLoading">
+          <span *ngIf="isLoading" class="ios-spinner ios-spinner-sm"></span>
+          {{ isLoading ? 'Logging in…' : 'Login' }}
+        </button>
+      </div>
+
+    </form>
+
+    <div class="login-divider"></div>
+
+    <div class="login-footer">
+      Don't have an account?
+      <a routerLink="/register">Register here</a>
+    </div>
+
+  </div>
+</div>

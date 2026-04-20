@@ -1,0 +1,198 @@
+<style>
+  .hero {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 100px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: var(--white);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 28px;
+  }
+
+  .hero-headline {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    max-width: 600px;
+    margin-bottom: 16px;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    color: var(--ink-muted);
+    font-weight: 400;
+    max-width: 440px;
+    margin-bottom: 48px;
+    margin-bottom: 32px;
+  }
+
+  .search-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 8px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    width: 100%;
+    max-width: 720px;
+    text-align: left;
+    border: 1px solid rgba(10,10,10,0.04);
+  }
+
+  .search-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: var(--radius-lg);
+    transition: var(--transition);
+    position: relative;
+  }
+
+  .search-field-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+  }
+
+  .search-field-input {
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    padding: 0;
+  }
+
+  .search-field-input::placeholder {
+    color: var(--ink-faint);
+  }
+
+  .search-divider {
+    width: 1px;
+    background: rgba(10,10,10,0.08);
+    margin: 12px 0;
+  }
+
+  .search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 16px 28px;
+    font-family: var(--font);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .search-error {
+    color: var(--red);
+    font-size: 0.75rem;
+    font-weight: 500;
+    position: absolute;
+    bottom: 2px;
+    left: 18px;
+  }
+
+  @media (max-width: 700px) {
+    .hero-headline {
+      font-size: 2.25rem;
+    }
+
+    .search-card {
+      flex-direction: column;
+      padding: 16px;
+      gap: 8px;
+    }
+
+    .search-divider {
+      width: 100%;
+      height: 1px;
+      margin: 0;
+    }
+
+    .search-field {
+      padding: 10px 14px;
+    }
+
+  }
+</style>
+
+<section class="hero">
+
+  <h1 class="hero-headline">Search for your bus</h1>
+  <br>
+
+  <form class="search-card" [formGroup]="searchForm" (ngSubmit)="onSearch()">
+
+    <div class="search-field">
+      <span class="search-field-label">From</span>
+      <input class="search-field-input"
+             type="text"
+             formControlName="src"
+             placeholder="Source city" />
+      <span class="search-error"
+            *ngIf="f['src'].touched && f['src'].invalid">Required</span>
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+      <span class="search-field-label">To</span>
+      <input class="search-field-input"
+             type="text"
+             formControlName="dest"
+             placeholder="Destination city" />
+      <span class="search-error"
+            *ngIf="f['dest'].touched && f['dest'].invalid">Required</span>
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+      <span class="search-field-label">Date</span>
+      <input class="search-field-input"
+             type="date"
+             formControlName="date" />
+      <span class="search-error"
+            *ngIf="f['date'].touched && f['date'].invalid">Required</span>
+    </div>
+
+    <button type="submit" class="search-btn">
+      Search →
+    </button>
+
+  </form>
+
+</section>

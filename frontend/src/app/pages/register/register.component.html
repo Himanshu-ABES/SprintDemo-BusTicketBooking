@@ -1,0 +1,212 @@
+<style>
+  .register-page {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .register-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 32px 28px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(10,10,10,0.04);
+    width: 100%;
+    max-width: 460px;
+    text-align: center;
+  }
+
+  .register-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .register-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .register-sub {
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+  }
+
+  .register-field {
+    margin-bottom: 18px;
+  }
+
+  .register-field-error {
+    font-size: 0.75rem;
+    color: var(--red);
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  .register-actions {
+    margin-top: 28px;
+  }
+
+  .register-divider {
+    height: 1px;
+    background: rgba(10,10,10,0.08);
+    margin: 24px 0;
+  }
+
+  .register-footer {
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+  }
+
+  .register-footer a {
+    color: var(--ink);
+    font-weight: 600;
+  }
+</style>
+
+<div class="register-page">
+  <div class="register-card">
+
+    <div class="register-header">
+      <div class="register-title">Create Account</div>
+      <div class="register-sub">Register to book bus tickets</div>
+    </div>
+
+    <!-- Success -->
+    <div *ngIf="successMessage" class="ios-alert ios-alert-success" style="margin-bottom: 20px;">
+      {{ successMessage }}
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="ios-alert ios-alert-error" style="margin-bottom: 20px;">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <!-- Username -->
+      <div class="register-field">
+        <label class="ios-label">Username</label>
+        <input class="ios-input"
+               [class.invalid]="f['username'].touched && f['username'].invalid"
+               type="text"
+               formControlName="username"
+               placeholder="e.g. rahul_s" />
+        <div class="register-field-error" *ngIf="f['username'].touched && f['username'].errors?.['required']">
+          Username is required.
+        </div>
+        <div class="register-field-error" *ngIf="f['username'].touched && f['username'].errors?.['minlength']">
+          Username must be at least 3 characters.
+        </div>
+        <div class="register-field-error" *ngIf="f['username'].touched && f['username'].errors?.['pattern']">
+          Only letters, numbers, and underscores allowed.
+        </div>
+        <div class="register-field-error" *ngIf="fieldErrors['username']">
+          {{ fieldErrors['username'] }}
+        </div>
+      </div>
+
+      <!-- Full Name -->
+      <div class="register-field">
+        <label class="ios-label">Full Name</label>
+        <input class="ios-input"
+               [class.invalid]="f['custName'].touched && f['custName'].invalid"
+               type="text"
+               formControlName="custName"
+               placeholder="e.g. Rahul Sharma" />
+        <div class="register-field-error" *ngIf="f['custName'].touched && f['custName'].errors?.['required']">
+          Full name is required.
+        </div>
+        <div class="register-field-error" *ngIf="f['custName'].touched && f['custName'].errors?.['minlength']">
+          Name must be at least 2 characters.
+        </div>
+        <div class="register-field-error" *ngIf="fieldErrors['custName']">
+          {{ fieldErrors['custName'] }}
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="register-field">
+        <label class="ios-label">Email</label>
+        <input class="ios-input"
+               [class.invalid]="f['email'].touched && f['email'].invalid"
+               type="email"
+               formControlName="email"
+               placeholder="e.g. rahul@example.com" />
+        <div class="register-field-error" *ngIf="f['email'].touched && f['email'].errors?.['required']">
+          Email is required.
+        </div>
+        <div class="register-field-error" *ngIf="f['email'].touched && f['email'].errors?.['email']">
+          Please enter a valid email address.
+        </div>
+        <div class="register-field-error" *ngIf="fieldErrors['email']">
+          {{ fieldErrors['email'] }}
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="register-field">
+        <label class="ios-label">Phone Number</label>
+        <input class="ios-input"
+               [class.invalid]="f['phoneNo'].touched && f['phoneNo'].invalid"
+               type="text"
+               formControlName="phoneNo"
+               placeholder="10-digit mobile number" />
+        <div class="register-field-error" *ngIf="f['phoneNo'].touched && f['phoneNo'].errors?.['required']">
+          Phone number is required.
+        </div>
+        <div class="register-field-error" *ngIf="f['phoneNo'].touched && f['phoneNo'].errors?.['pattern']">
+          Enter a valid 10-digit Indian mobile number.
+        </div>
+        <div class="register-field-error" *ngIf="fieldErrors['phoneNo']">
+          {{ fieldErrors['phoneNo'] }}
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="register-field">
+        <label class="ios-label">Password</label>
+        <input class="ios-input"
+               [class.invalid]="f['password'].touched && f['password'].invalid"
+               type="password"
+               formControlName="password"
+               placeholder="Min 6 chars, 1 uppercase, 1 number" />
+        <div class="register-field-error" *ngIf="f['password'].touched && f['password'].errors?.['required']">
+          Password is required.
+        </div>
+        <div class="register-field-error" *ngIf="f['password'].touched && f['password'].errors?.['minlength']">
+          Password must be at least 6 characters.
+        </div>
+        <div class="register-field-error" *ngIf="f['password'].touched && f['password'].errors?.['pattern']">
+          Must contain at least one uppercase letter and one number.
+        </div>
+        <div class="register-field-error" *ngIf="fieldErrors['password']">
+          {{ fieldErrors['password'] }}
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="register-actions">
+        <button type="submit"
+                class="ios-btn ios-btn-primary ios-btn-full ios-btn-lg"
+                [disabled]="isLoading">
+          <span *ngIf="isLoading" class="ios-spinner ios-spinner-sm"></span>
+          {{ isLoading ? 'Registering…' : 'Create Account' }}
+        </button>
+      </div>
+
+    </form>
+
+    <div class="register-divider"></div>
+
+    <div class="register-footer">
+      Already have an account?
+      <a routerLink="/login">Login here</a>
+    </div>
+
+  </div>
+</div>

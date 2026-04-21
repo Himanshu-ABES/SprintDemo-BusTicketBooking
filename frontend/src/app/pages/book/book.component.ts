@@ -1,9 +1,8 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { RouteSchedule } from '../../models/schedule.model';
 import { AuthService } from '../../services/auth.service';
 
@@ -40,6 +39,7 @@ export class BookComponent implements OnInit {
   bookingSuccess: boolean = false;
 
   private apiUrl = 'http://localhost:8080/api';
+  private readonly bookedSeatStorageKeyPrefix = 'bookedSeats_schedule_';
   private platformId = inject(PLATFORM_ID);
 
   constructor(
@@ -88,8 +88,11 @@ export class BookComponent implements OnInit {
 
     const total = this.schedule.totSeats;
     const avl = this.schedule.avlSeats;
-    const taken = total - avl;
+    const taken = Math.max(0, total - avl);
     const seatsPerRow = 7;
+    const persistedTakenSeats = this.getPersistedBookedSeats(this.schedule.id);
+    const persistedTakenSet = new Set(persistedTakenSeats);
+    let unknownTakenToAssign = Math.max(0, taken - persistedTakenSet.size);
 
     this.seats = [];
 
@@ -99,8 +102,11 @@ export class BookComponent implements OnInit {
       const rowLabel = String.fromCharCode(65 + rowIndex); // A, B, C...
       const label = `${rowLabel}${colIndex}`;
 
-      // Last N seats are taken (where N = total - available)
-      const isTaken = i >= (total - taken);
+      let isTaken = persistedTakenSet.has(label);
+      if (!isTaken && unknownTakenToAssign > 0 && i >= (total - unknownTakenToAssign)) {
+        isTaken = true;
+        unknownTakenToAssign--;
+      }
 
       this.seats.push({
         label,
@@ -166,6 +172,7 @@ export class BookComponent implements OnInit {
       next: (response) => {
         this.isBooking = false;
         this.bookingId = response.id;
+        this.persistBookedSeats(this.schedule!.id, this.passengers.map(p => p.seatNo));
         this.bookingSuccess = true;
       },
       error: (err) => {
@@ -173,5 +180,53 @@ export class BookComponent implements OnInit {
         this.errorMessage = err.error?.message || 'Booking failed. Please try again.';
       }
     });
+  }
+
+  private getPersistedBookedSeats(scheduleId: number): string[] {
+    if (!isPlatformBrowser(this.platformId)) return [];
+
+    const raw = localStorage.getItem(this.getStorageKey(scheduleId));
+    if (!raw) return [];
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+
+      return parsed
+        .filter((seat): seat is string => typeof seat === 'string' && seat.trim().length > 0)
+        .map(seat => seat.trim().toUpperCase());
+    } catch {
+      return [];
+    }
+  }
+
+  private persistBookedSeats(scheduleId: number, newSeatLabels: string[]): void {
+    if (!isPlatformBrowser(this.platformId) || newSeatLabels.length === 0) return;
+
+    const existing = this.getPersistedBookedSeats(scheduleId);
+    const merged = Array.from(new Set([
+      ...existing,
+      ...newSeatLabels
+        .filter(seat => typeof seat === 'string' && seat.trim().length > 0)
+        .map(seat => seat.trim().toUpperCase())
+    ])).sort(this.compareSeatLabels);
+
+    localStorage.setItem(this.getStorageKey(scheduleId), JSON.stringify(merged));
+  }
+
+  private getStorageKey(scheduleId: number): string {
+    return `${this.bookedSeatStorageKeyPrefix}${scheduleId}`;
+  }
+
+  private compareSeatLabels(a: string, b: string): number {
+    const matchA = /^([A-Z]+)(\d+)$/.exec(a);
+    const matchB = /^([A-Z]+)(\d+)$/.exec(b);
+
+    if (!matchA || !matchB) return a.localeCompare(b);
+
+    const rowCompare = matchA[1].localeCompare(matchB[1]);
+    if (rowCompare !== 0) return rowCompare;
+
+    return Number(matchA[2]) - Number(matchB[2]);
   }
 }
